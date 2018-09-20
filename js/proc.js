@@ -5,7 +5,7 @@ $(function() {
 
     $.get("https://data.irozhlas.cz/senat-zakony/data/graf_2.csv", function(data) {
         graph(data, "#graf2");
-    });
+    });    
 });
 
 function graph(file, elem) {
@@ -18,7 +18,7 @@ function graph(file, elem) {
     }
 
     for (var entry in data) {
-        var senator = entry + "<div class='senInfo'>" + data[entry].party + ", " + data[entry].district;
+        var senator = "<div class='senBox'>" + entry + "</div><div class='senInfo'>" + data[entry].party + ", " + data[entry].district + "</div>";
         var infoCell = $("<td>").append(senator);
 
         var lawCountCell = $("<td>").append("<b>" + ($.isEmptyObject(data[entry].laws) ? 0 : data[entry].laws.length) + "</b>");
@@ -54,14 +54,39 @@ function genTooltips(data) {
             var year = parseInt(data[entry].laws[law].date.substring(0,4));
             var month = parseInt(data[entry].laws[law].date.substring(5,7));
             var day = parseInt(data[entry].laws[law].date.substring(8,10));
+            var elemID = "#l"+senID+data[entry].laws[law].url;
             var tooltipContent = "<a href='https://www.senat.cz/xqw/xervlet/pssenat/historie?action=detail&value=" + data[entry].laws[law].url + "' target='_blank'>" + data[entry].laws[law].name + "</a>" +
-             "<div class='submitted'>Navrženo: " + day + ". " + month + ". " + year + "</div>";
+             "<br><span class='submitted'>Navrženo: " + day + ". " + month + ". " + year + "</span>";
 
-            new Tooltip($("#l"+senID+data[entry].laws[law].url), {
-                    placement: 'top',
-                    title: tooltipContent,
-                    html: true
+            var tooltipdiv = $("<div>").html(tooltipContent).addClass("tooltip").css("display", "none");
+            $(elemID).append(tooltipdiv).hover(function(){
+                var tooltip = $(this).children();
+                var target = $(this);
+
+                var init_tooltip = function()
+                {   
+                    tooltip.css( 'max-width', 320 );
+                
+                    var pos_left = target.position().left,
+                        pos_top  = target.position().top + 10;
+                    
+
+                    if( pos_left + tooltip.outerWidth() > $( window ).width() )
+                    {   
+                        pos_left = target.position().left - tooltip.outerWidth() + target.outerWidth() / 2 + 20;
+                    }
+                    
+                    tooltip.css( { left: pos_left, top: pos_top } )
+                };
+                
+                init_tooltip();
+                $( window ).resize( init_tooltip );
+
+                tooltip.css("display","initial");
+            }, function() {
+                $(this).children().css("display","none");
             });
+
         }
         senID++;
     }
