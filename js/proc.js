@@ -1,11 +1,9 @@
-//url: 3883
-
 $(function() {
-    $.get("data/graf_1.csv", function(data) {
+    $.get("https://data.irozhlas.cz/senat-zakony/data/graf_1.csv", function(data) {
         graph(data, "#graf1");
     });
 
-    $.get("data/graf_2.csv", function(data) {
+    $.get("https://data.irozhlas.cz/senat-zakony/data/graf_2.csv", function(data) {
         graph(data, "#graf2");
     });
 });
@@ -70,7 +68,7 @@ function genTooltips(data) {
 }
 
 function process_csv(csv) {
-    var lines = csv.split("\r\n");
+    var lines = csv.split("\n");
     var data = {};
 
     lines.forEach(function(line) {
